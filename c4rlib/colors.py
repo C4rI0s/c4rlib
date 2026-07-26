@@ -1,8 +1,13 @@
 import colorsys
 import random
 
+from .terminal import Terminal
+
 
 class ColorUtils:
+    # Kept as literals for backwards compatibility and for callers that build
+    # sequences by hand. Prefer the methods below, which return "" when the
+    # output is not a terminal — see c4rlib.terminal.
     RESET         = "\033[0m"
     BOLD          = "\033[1m"
     DIM           = "\033[2m"
@@ -17,98 +22,109 @@ class ColorUtils:
     OVERLINE      = "\033[53m"
 
     @staticmethod
+    def reset() -> str:
+        """The reset sequence, or "" when colour is off."""
+        return Terminal.reset()
+
+    @staticmethod
     def rgb(r: int, g: int, b: int) -> str:
-        return f"\033[38;2;{r};{g};{b}m"
+        return Terminal.fg(r, g, b)
 
     @staticmethod
     def bg_rgb(r: int, g: int, b: int) -> str:
-        return f"\033[48;2;{r};{g};{b}m"
+        return Terminal.bg(r, g, b)
 
     @staticmethod
     def hex(hex_color: str) -> str:
-        h = hex_color.lstrip("#")
-        return f"\033[38;2;{int(h[0:2],16)};{int(h[2:4],16)};{int(h[4:6],16)}m"
+        return Terminal.fg(*ColorUtils.hex_to_rgb(hex_color))
 
     @staticmethod
     def bg_hex(hex_color: str) -> str:
-        h = hex_color.lstrip("#")
-        return f"\033[48;2;{int(h[0:2],16)};{int(h[2:4],16)};{int(h[4:6],16)}m"
+        return Terminal.bg(*ColorUtils.hex_to_rgb(hex_color))
 
     @staticmethod
     def hsl(h: int, s: int, l: int) -> str:
         r, g, b = colorsys.hls_to_rgb(h/360, l/100, s/100)
-        return f"\033[38;2;{int(r*255)};{int(g*255)};{int(b*255)}m"
+        return Terminal.fg(int(r*255), int(g*255), int(b*255))
 
     @staticmethod
     def bg_hsl(h: int, s: int, l: int) -> str:
         r, g, b = colorsys.hls_to_rgb(h/360, l/100, s/100)
-        return f"\033[48;2;{int(r*255)};{int(g*255)};{int(b*255)}m"
+        return Terminal.bg(int(r*255), int(g*255), int(b*255))
 
     @staticmethod
     def paint(text: str, hex_color: str) -> str:
-        return f"{ColorUtils.hex(hex_color)}{text}{ColorUtils.RESET}"
+        return f"{ColorUtils.hex(hex_color)}{text}{ColorUtils.reset()}"
 
     @staticmethod
     def bg_paint(text: str, fg: str, bg: str) -> str:
-        return f"{ColorUtils.hex(fg)}{ColorUtils.bg_hex(bg)}{text}{ColorUtils.RESET}"
+        return f"{ColorUtils.hex(fg)}{ColorUtils.bg_hex(bg)}{text}{ColorUtils.reset()}"
+
+    @staticmethod
+    def _attr(text: str, code: str) -> str:
+        return f"{Terminal.sgr(code)}{text}{ColorUtils.reset()}"
 
     @staticmethod
     def bold(text: str) -> str:
-        return f"{ColorUtils.BOLD}{text}{ColorUtils.RESET}"
+        return ColorUtils._attr(text, "1")
 
     @staticmethod
     def italic(text: str) -> str:
-        return f"{ColorUtils.ITALIC}{text}{ColorUtils.RESET}"
+        return ColorUtils._attr(text, "3")
 
     @staticmethod
     def underline(text: str) -> str:
-        return f"{ColorUtils.UNDERLINE}{text}{ColorUtils.RESET}"
+        return ColorUtils._attr(text, "4")
 
     @staticmethod
     def strike(text: str) -> str:
-        return f"{ColorUtils.STRIKETHROUGH}{text}{ColorUtils.RESET}"
+        return ColorUtils._attr(text, "9")
 
     @staticmethod
     def blink(text: str) -> str:
-        return f"{ColorUtils.BLINK}{text}{ColorUtils.RESET}"
+        return ColorUtils._attr(text, "5")
 
     @staticmethod
     def dim(text: str) -> str:
-        return f"{ColorUtils.DIM}{text}{ColorUtils.RESET}"
+        return ColorUtils._attr(text, "2")
 
     @staticmethod
     def reverse_text(text: str) -> str:
-        return f"{ColorUtils.REVERSE}{text}{ColorUtils.RESET}"
+        return ColorUtils._attr(text, "7")
 
     @staticmethod
     def overline(text: str) -> str:
-        return f"{ColorUtils.OVERLINE}{text}{ColorUtils.RESET}"
+        return ColorUtils._attr(text, "53")
 
     @staticmethod
     def rainbow(text: str) -> str:
         colors = [(255,0,0),(255,127,0),(255,255,0),(0,255,0),(0,0,255),(75,0,130),(148,0,211)]
         result = ""
         for i, char in enumerate(text):
-            r, g, b = colors[i % len(colors)]
-            result += f"\033[38;2;{r};{g};{b}m{char}"
-        return result + ColorUtils.RESET
+            result += Terminal.fg(*colors[i % len(colors)]) + char
+        return result + ColorUtils.reset()
 
     @staticmethod
     def random_color(text: str) -> str:
         r, g, b = random.randint(50,255), random.randint(50,255), random.randint(50,255)
-        return f"\033[38;2;{r};{g};{b}m{text}{ColorUtils.RESET}"
+        return f"{Terminal.fg(r, g, b)}{text}{ColorUtils.reset()}"
 
     @staticmethod
     def style(text: str, hex_color: str, bold: bool = False, italic: bool = False, underline: bool = False) -> str:
         result = ColorUtils.hex(hex_color)
-        if bold:      result += ColorUtils.BOLD
-        if italic:    result += ColorUtils.ITALIC
-        if underline: result += ColorUtils.UNDERLINE
-        return result + text + ColorUtils.RESET
+        if bold:      result += Terminal.sgr("1")
+        if italic:    result += Terminal.sgr("3")
+        if underline: result += Terminal.sgr("4")
+        return result + text + ColorUtils.reset()
 
     @staticmethod
     def hex_to_rgb(hex_color: str) -> tuple:
+        """Accepts ``#rrggbb`` and the ``#rgb`` shorthand, with or without ``#``."""
         h = hex_color.lstrip("#")
+        if len(h) == 3:
+            h = h[0]*2 + h[1]*2 + h[2]*2
+        if len(h) != 6:
+            raise ValueError(f"not a hex colour: {hex_color!r}")
         return int(h[0:2],16), int(h[2:4],16), int(h[4:6],16)
 
     @staticmethod
@@ -147,8 +163,12 @@ class ColorUtils:
 
     @staticmethod
     def palette(hex_color: str, steps: int = 5) -> list:
+        if steps < 1:
+            return []
         r, g, b = ColorUtils.hex_to_rgb(hex_color)
         h, l, s = colorsys.rgb_to_hls(r/255, g/255, b/255)
+        if steps == 1:
+            return [hex_color if hex_color.startswith("#") else f"#{hex_color}"]
         result = []
         for i in range(steps):
             li = i / (steps-1)
@@ -238,8 +258,7 @@ class Gradient:
     @staticmethod
     def apply(text: str, start: tuple, end: tuple) -> str:
         if len(text) <= 1:
-            r, g, b = start
-            return f"\033[38;2;{r};{g};{b}m{text}{ColorUtils.RESET}"
+            return f"{Terminal.fg(*start)}{text}{ColorUtils.reset()}"
         result = ""
         steps = len(text) - 1
         for i, char in enumerate(text):
@@ -247,8 +266,8 @@ class Gradient:
             r = int((1-t)*start[0] + t*end[0])
             g = int((1-t)*start[1] + t*end[1])
             b = int((1-t)*start[2] + t*end[2])
-            result += f"\033[38;2;{r};{g};{b}m{char}"
-        return result + ColorUtils.RESET
+            result += Terminal.fg(r, g, b) + char
+        return result + ColorUtils.reset()
 
     @staticmethod
     def preset(text: str, preset) -> str:
@@ -258,8 +277,7 @@ class Gradient:
     def multicolor(text: str, colors: list) -> str:
         if not colors: return text
         if len(colors) == 1:
-            r, g, b = colors[0]
-            return f"\033[38;2;{r};{g};{b}m{text}{ColorUtils.RESET}"
+            return f"{Terminal.fg(*colors[0])}{text}{ColorUtils.reset()}"
         n = len(text)
         segments = len(colors) - 1
         result = ""
@@ -270,8 +288,8 @@ class Gradient:
             r = int((1-t)*colors[seg][0] + t*colors[seg+1][0])
             g = int((1-t)*colors[seg][1] + t*colors[seg+1][1])
             b = int((1-t)*colors[seg][2] + t*colors[seg+1][2])
-            result += f"\033[38;2;{r};{g};{b}m{char}"
-        return result + ColorUtils.RESET
+            result += Terminal.fg(r, g, b) + char
+        return result + ColorUtils.reset()
 
     @staticmethod
     def random_gradient(text: str) -> str:
@@ -282,8 +300,7 @@ class Gradient:
     @staticmethod
     def bg_apply(text: str, start: tuple, end: tuple) -> str:
         if len(text) <= 1:
-            r, g, b = start
-            return f"\033[48;2;{r};{g};{b}m{text}{ColorUtils.RESET}"
+            return f"{Terminal.bg(*start)}{text}{ColorUtils.reset()}"
         result = ""
         steps = len(text) - 1
         for i, char in enumerate(text):
@@ -291,8 +308,8 @@ class Gradient:
             r = int((1-t)*start[0] + t*end[0])
             g = int((1-t)*start[1] + t*end[1])
             b = int((1-t)*start[2] + t*end[2])
-            result += f"\033[48;2;{r};{g};{b}m{char}"
-        return result + ColorUtils.RESET
+            result += Terminal.bg(r, g, b) + char
+        return result + ColorUtils.reset()
 
     @staticmethod
     def fire(text: str) -> str:

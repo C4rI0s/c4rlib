@@ -34,11 +34,11 @@ def _ts() -> str:
 
 
 def _base(level_color: str, symbol: str, label: str, *parts) -> None:
-    ts  = f"{ColorUtils.hex('#6c757d')}{_ts()}{ColorUtils.RESET}"
-    sym = f"{ColorUtils.hex(level_color)}{symbol}{ColorUtils.RESET}"
-    lbl = f"{ColorUtils.hex(level_color)}{label}{ColorUtils.RESET}"
-    msg = f"  {ColorUtils.hex('#00ccff')}{ColorUtils.RESET}".join(str(p) for p in parts)
-    print(f" [{ts}] {ColorUtils.hex('#6c757d')}|{ColorUtils.RESET} {sym} {ColorUtils.hex('#6c757d')}|{ColorUtils.RESET} {lbl} {ColorUtils.hex('#6c757d')}>{ColorUtils.RESET} {msg}")
+    ts  = f"{ColorUtils.hex('#6c757d')}{_ts()}{ColorUtils.reset()}"
+    sym = f"{ColorUtils.hex(level_color)}{symbol}{ColorUtils.reset()}"
+    lbl = f"{ColorUtils.hex(level_color)}{label}{ColorUtils.reset()}"
+    msg = f"  {ColorUtils.hex('#00ccff')}{ColorUtils.reset()}".join(str(p) for p in parts)
+    print(f" [{ts}] {ColorUtils.hex('#6c757d')}|{ColorUtils.reset()} {sym} {ColorUtils.hex('#6c757d')}|{ColorUtils.reset()} {lbl} {ColorUtils.hex('#6c757d')}>{ColorUtils.reset()} {msg}")
     _maybe_sound(label)
 
 
@@ -156,31 +156,31 @@ class Logger:
 
     @staticmethod
     def gradient_log(text: str, start: tuple = (0,200,255), end: tuple = (200,0,255)) -> None:
-        ts  = f"{ColorUtils.hex('#6c757d')}{_ts()}{ColorUtils.RESET}"
+        ts  = f"{ColorUtils.hex('#6c757d')}{_ts()}{ColorUtils.reset()}"
         msg = Gradient.apply(text, start, end)
-        print(f" [{ts}] {ColorUtils.hex('#6c757d')}|{ColorUtils.RESET} ✦ {ColorUtils.hex('#6c757d')}|{ColorUtils.RESET} {msg}")
+        print(f" [{ts}] {ColorUtils.hex('#6c757d')}|{ColorUtils.reset()} ✦ {ColorUtils.hex('#6c757d')}|{ColorUtils.reset()} {msg}")
 
     @staticmethod
     def banner_log(text: str, hex_color: str = "#00ccff") -> None:
-        ts  = f"{ColorUtils.hex('#6c757d')}{_ts()}{ColorUtils.RESET}"
+        ts  = f"{ColorUtils.hex('#6c757d')}{_ts()}{ColorUtils.reset()}"
         col = ColorUtils.hex(hex_color)
-        bar = f"{col}{'━' * (len(text) + 6)}{ColorUtils.RESET}"
-        print(f" [{ts}]\n {bar}\n  {col}  {text}  {ColorUtils.RESET}\n {bar}")
+        bar = f"{col}{'━' * (len(text) + 6)}{ColorUtils.reset()}"
+        print(f" [{ts}]\n {bar}\n  {col}  {text}  {ColorUtils.reset()}\n {bar}")
 
     @staticmethod
     def fire(*parts) -> None:
-        ts  = f"{ColorUtils.hex('#6c757d')}{_ts()}{ColorUtils.RESET}"
+        ts  = f"{ColorUtils.hex('#6c757d')}{_ts()}{ColorUtils.reset()}"
         msg = Gradient.fire(" ".join(str(p) for p in parts))
-        print(f" [{ts}] {ColorUtils.hex('#6c757d')}|{ColorUtils.RESET} 🔥 {ColorUtils.hex('#6c757d')}|{ColorUtils.RESET} {msg}")
+        print(f" [{ts}] {ColorUtils.hex('#6c757d')}|{ColorUtils.reset()} 🔥 {ColorUtils.hex('#6c757d')}|{ColorUtils.reset()} {msg}")
 
     @staticmethod
     def galaxy(*parts) -> None:
-        ts  = f"{ColorUtils.hex('#6c757d')}{_ts()}{ColorUtils.RESET}"
+        ts  = f"{ColorUtils.hex('#6c757d')}{_ts()}{ColorUtils.reset()}"
         msg = Gradient.galaxy(" ".join(str(p) for p in parts))
-        print(f" [{ts}] {ColorUtils.hex('#6c757d')}|{ColorUtils.RESET} 🌌 {ColorUtils.hex('#6c757d')}|{ColorUtils.RESET} {msg}")
+        print(f" [{ts}] {ColorUtils.hex('#6c757d')}|{ColorUtils.reset()} 🌌 {ColorUtils.hex('#6c757d')}|{ColorUtils.reset()} {msg}")
 
     @staticmethod
     def neon(*parts) -> None:
-        ts  = f"{ColorUtils.hex('#6c757d')}{_ts()}{ColorUtils.RESET}"
+        ts  = f"{ColorUtils.hex('#6c757d')}{_ts()}{ColorUtils.reset()}"
         msg = Gradient.neon(" ".join(str(p) for p in parts))
-        print(f" [{ts}] {ColorUtils.hex('#6c757d')}|{ColorUtils.RESET} ⚡ {ColorUtils.hex('#6c757d')}|{ColorUtils.RESET} {msg}")
+        print(f" [{ts}] {ColorUtils.hex('#6c757d')}|{ColorUtils.reset()} ⚡ {ColorUtils.hex('#6c757d')}|{ColorUtils.reset()} {msg}")

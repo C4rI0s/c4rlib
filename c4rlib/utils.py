@@ -3,6 +3,7 @@ import sys
 import time
 import uuid
 import random
+import secrets
 import string
 import hashlib
 import datetime
@@ -11,6 +12,17 @@ import subprocess
 
 
 class Utils:
+    """General-purpose helpers.
+
+    Anything that produces a credential — tokens, PINs, passwords — draws from
+    `secrets`, not `random`. `random` is a Mersenne Twister: observe enough of
+    its output and the internal state, and therefore every future value, can be
+    reconstructed. The fake-data generators below (`random_name`, `random_ipv4`,
+    `random_credit_card`…) deliberately keep using `random` — they are for
+    fixtures and seeding, and must never be used as credentials or as anything
+    a security decision depends on.
+    """
+
     @staticmethod
     def generate_uuid(version: int = 4) -> str:
         return str(uuid.uuid1() if version == 1 else uuid.uuid4())
@@ -21,21 +33,24 @@ class Utils:
 
     @staticmethod
     def generate_token(length: int = 32) -> str:
-        return "".join(random.choices(string.ascii_letters + string.digits, k=length))
+        """Cryptographically secure alphanumeric token of `length` characters."""
+        alphabet = string.ascii_letters + string.digits
+        return "".join(secrets.choice(alphabet) for _ in range(length))
 
     @staticmethod
     def generate_hex_token(length: int = 32) -> str:
-        return "".join(random.choices("abcdef0123456789", k=length))
+        """Secure hex token of `length` characters (not bytes)."""
+        return "".join(secrets.choice("abcdef0123456789") for _ in range(length))
 
     @staticmethod
     def generate_pin(digits: int = 6) -> str:
-        return "".join(random.choices(string.digits, k=digits))
+        return "".join(secrets.choice(string.digits) for _ in range(digits))
 
     @staticmethod
     def generate_password(length: int = 16, symbols: bool = True) -> str:
         chars = string.ascii_letters + string.digits
         if symbols: chars += "!@#$%^&*()-_=+[]{}|;:,.<>?"
-        return "".join(random.choices(chars, k=length))
+        return "".join(secrets.choice(chars) for _ in range(length))
 
     @staticmethod
     def timestamp() -> int:

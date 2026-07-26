@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name            = "c4rlib"
-version         = "3.0.3"
+version         = "3.1.0"
 description     = "Showtime CLI toolkit for Python — colors, gradients, logger, spinners, progress bars, tables, ASCII art (FIGlet, image→ASCII, animated sprites), terminal animations (matrix rain, fireworks, glitch…), cross-platform audio, interactive menus/forms/dashboards, HTTP, crypto, files, Discord utils and FX showcases."
 readme          = "README.md"
 license         = "MIT"

@@ -3,6 +3,7 @@ import sys
 import time
 import threading
 from .colors import ColorUtils, Gradient
+from .terminal import Terminal
 
 
 class Spinner:
@@ -50,7 +51,7 @@ class Spinner:
         while self._running:
             frame = self._frames[self._idx % len(self._frames)]
             col   = ColorUtils.hex(self._color)
-            sys.stdout.write(f"\r {col}{frame}{ColorUtils.RESET}  {self.text}   ")
+            sys.stdout.write(f"\r {col}{frame}{ColorUtils.reset()}  {self.text}   ")
             sys.stdout.flush()
             self._idx += 1
             time.sleep(self._interval)
@@ -65,7 +66,7 @@ class Spinner:
         self._running = False
         if self._thread: self._thread.join()
         icon = f"{ColorUtils.hex('#29bf12')}✔" if success else f"{ColorUtils.hex('#d00000')}✘"
-        sys.stdout.write(f"\r {icon}{ColorUtils.RESET}  {final_text or self.text}   \n")
+        sys.stdout.write(f"\r {icon}{ColorUtils.reset()}  {final_text or self.text}   \n")
         sys.stdout.flush()
 
     def __enter__(self) -> "Spinner":
@@ -121,24 +122,24 @@ class ProgressBar:
         filled = int(self.width * pct)
         bar_f  = ColorUtils.hex(self._color)    + self._fill  * filled
         bar_e  = ColorUtils.hex(self._bg_color) + self._empty * (self.width - filled)
-        bar    = bar_f + bar_e + ColorUtils.RESET
+        bar    = bar_f + bar_e + ColorUtils.reset()
         elapsed = time.time() - self._start
         extras  = ""
         if self._show_speed and elapsed > 0:
             speed   = self._current / elapsed
-            extras += f"  {ColorUtils.hex('#f77f00')}{speed:.1f}/s{ColorUtils.RESET}"
+            extras += f"  {ColorUtils.hex('#f77f00')}{speed:.1f}/s{ColorUtils.reset()}"
         if self._show_eta and self._current > 0 and self._current < self.total:
             remaining = (elapsed / self._current) * (self.total - self._current)
-            extras   += f"  ETA {ColorUtils.hex('#ffd60a')}{remaining:.1f}s{ColorUtils.RESET}"
-        pct_str = f"{ColorUtils.hex(self._color)}{pct*100:5.1f}%{ColorUtils.RESET}"
-        cnt_str = f"{ColorUtils.hex('#6c757d')}{self._current}/{self.total}{ColorUtils.RESET}" if self._show_count else ""
+            extras   += f"  ETA {ColorUtils.hex('#ffd60a')}{remaining:.1f}s{ColorUtils.reset()}"
+        pct_str = f"{ColorUtils.hex(self._color)}{pct*100:5.1f}%{ColorUtils.reset()}"
+        cnt_str = f"{ColorUtils.hex('#6c757d')}{self._current}/{self.total}{ColorUtils.reset()}" if self._show_count else ""
         sys.stdout.write(f"\r {self.label}  [{bar}]  {pct_str}  {cnt_str}{extras}  ")
         sys.stdout.flush()
 
     def finish(self, text: str = None) -> None:
         self._current = self.total
         self._render()
-        sys.stdout.write(f"\n {ColorUtils.hex('#29bf12')}✔{ColorUtils.RESET}  {text or self.label} complete\n")
+        sys.stdout.write(f"\n {ColorUtils.hex('#29bf12')}✔{ColorUtils.reset()}  {text or self.label} complete\n")
         sys.stdout.flush()
 
 
@@ -189,30 +190,35 @@ class Table:
         self._rows = []
 
     def _col_widths(self) -> list:
+        # Measured in display columns, not characters: "日本語" is 3 code points
+        # but 6 columns, and using len() here ragged the borders.
         all_rows = [self.headers] + self._rows if self.headers else self._rows
         cols     = max(len(r) for r in all_rows) if all_rows else 0
-        return [max(len(r[i]) if i < len(r) else 0 for r in all_rows) for i in range(cols)]
+        return [
+            max(Terminal.display_width(r[i]) if i < len(r) else 0 for r in all_rows)
+            for i in range(cols)
+        ]
 
     def render(self) -> str:
         widths = self._col_widths()
         bc     = ColorUtils.hex(self._border_color)
         hc     = ColorUtils.hex(self._header_color)
-        reset  = ColorUtils.RESET
+        reset  = ColorUtils.reset()
 
         def sep(l, m, r, h):
             return bc + l + m.join(h * (w+2) for w in widths) + r + reset
 
         def fmt_cell(text, width, color):
-            if self._align == "right":  padded = text.rjust(width)
-            elif self._align == "center": padded = text.center(width)
-            else:                         padded = text.ljust(width)
+            padded = Terminal.pad_display(text, width, self._align)
             return f" {color}{padded}{reset} "
 
         lines = []
         if self.title:
-            total_w = sum(widths) + len(widths)*3 + len(widths)-1
+            # Inner width = each cell (w + 2 padding) plus the separators
+            # between them. The previous formula added len(widths) too many.
+            total_w = sum(widths) + 3*len(widths) - 1
             lines.append(sep("╔","═","╗","═"))
-            lines.append(bc+"║"+reset+hc+self.title.center(total_w)+reset+bc+"║"+reset)
+            lines.append(bc+"║"+reset+hc+Terminal.pad_display(self.title, total_w, "center")+reset+bc+"║"+reset)
             lines.append(sep("╠","╦","╣","═"))
         else:
             lines.append(sep("╔","╦","╗","═"))
@@ -299,16 +305,16 @@ class Console:
     def countdown(seconds: int, text: str = "Starting in", color: str = "#00ccff") -> None:
         col = ColorUtils.hex(color)
         for i in range(seconds, 0, -1):
-            sys.stdout.write(f"\r {col}{text} {i}s...{ColorUtils.RESET}  ")
+            sys.stdout.write(f"\r {col}{text} {i}s...{ColorUtils.reset()}  ")
             sys.stdout.flush()
             time.sleep(1)
-        sys.stdout.write(f"\r {col}{text} 0s... GO!{ColorUtils.RESET}  \n")
+        sys.stdout.write(f"\r {col}{text} 0s... GO!{ColorUtils.reset()}  \n")
         sys.stdout.flush()
 
     @staticmethod
     def typewriter(text: str, delay: float = 0.04, color: str = None) -> None:
         col   = ColorUtils.hex(color) if color else ""
-        reset = ColorUtils.RESET if color else ""
+        reset = ColorUtils.reset() if color else ""
         for char in text:
             sys.stdout.write(col+char+reset)
             sys.stdout.flush()
@@ -321,7 +327,7 @@ class Console:
         import shutil
         w   = shutil.get_terminal_size().columns
         col = ColorUtils.hex(color)
-        print(f"{col}{char * w}{ColorUtils.RESET}")
+        print(f"{col}{char * w}{ColorUtils.reset()}")
 
     @staticmethod
     def gradient_rule(start: tuple = (0,200,255), end: tuple = (200,0,255)) -> None:
@@ -333,13 +339,13 @@ class Console:
     @staticmethod
     def input_prompt(text: str, color: str = "#00ccff") -> str:
         col   = ColorUtils.hex(color)
-        reset = ColorUtils.RESET
+        reset = ColorUtils.reset()
         return input(f" {col}❯{reset} {text}: ")
 
     @staticmethod
     def confirm(text: str, color: str = "#ffd60a") -> bool:
         col    = ColorUtils.hex(color)
-        reset  = ColorUtils.RESET
+        reset  = ColorUtils.reset()
         answer = input(f" {col}?{reset} {text} [y/n]: ").strip().lower()
         return answer in ("y","yes","s","si","1","true")
 
@@ -347,7 +353,7 @@ class Console:
     def select(text: str, options: list, color: str = "#00ccff") -> int:
         col   = ColorUtils.hex(color)
         gray  = ColorUtils.hex("#6c757d")
-        reset = ColorUtils.RESET
+        reset = ColorUtils.reset()
         print(f"\n {col}?{reset} {text}")
         for i, opt in enumerate(options):
             print(f"  {gray}{i+1}.{reset} {opt}")
@@ -362,14 +368,14 @@ class Console:
 
     @staticmethod
     def pause(text: str = "Press ENTER to continue...") -> None:
-        input(f" {ColorUtils.hex('#6c757d')}{text}{ColorUtils.RESET}")
+        input(f" {ColorUtils.hex('#6c757d')}{text}{ColorUtils.reset()}")
 
     @staticmethod
     def print_cols(items: list, cols: int = 3, color: str = "#ffffff") -> None:
         import shutil
         col_width = shutil.get_terminal_size().columns // cols
         c = ColorUtils.hex(color)
-        reset = ColorUtils.RESET
+        reset = ColorUtils.reset()
         for i, item in enumerate(items):
             end = "\n" if (i+1) % cols == 0 else ""
             sys.stdout.write(f"{c}{str(item).ljust(col_width)}{reset}{end}")

@@ -1,7 +1,8 @@
-__version__ = "3.0.3"
+__version__ = "3.1.0"
 __author__  = "c4r"
 __license__ = "MIT"
 
+from .terminal     import Terminal
 from .colors       import ColorUtils, Gradient, GradientPresets
 from .logger       import Logger
 from .banners      import Box, Banner
@@ -19,6 +20,7 @@ from .interactive  import Menu, Form, Prompt, Dashboard
 from .fx           import FX
 
 __all__ = [
+    "Terminal",
     "ColorUtils", "Gradient", "GradientPresets",
     "Logger",
     "Box", "Banner",

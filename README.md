@@ -49,6 +49,7 @@ cd demos && for tape in *.tape; do vhs "$tape"; done
 - [Installation](#installation)
 - [Quickstart](#quickstart)
 - [Showcase demo](#showcase-demo)
+- [Terminal (colour gate & capabilities)](#terminal)
 - **Visual**
   - [ColorUtils](#colorutils)
   - [Gradient](#gradient)
@@ -126,6 +127,53 @@ python examples/showcase.py
 ```
 
 Pick a section from the arrow-key menu (15 demos) or run `FX.demo_all()` for the auto-playing reel.
+
+---
+
+## Terminal
+
+Every escape sequence the library produces passes through here. Colour is
+emitted only when something can render it, so redirecting output no longer fills
+the file with escape codes.
+
+```python
+from c4rlib import Terminal
+
+Terminal.colors_enabled()      # False when piped, when NO_COLOR is set, or TERM=dumb
+Terminal.color_depth()         # 'truecolor' | '256' | '16' | 'none'
+Terminal.info()                # everything detection concluded — paste this in bug reports
+```
+
+Detection is automatic, and honours the de-facto standards:
+
+| Signal                    | Effect                                    |
+| ------------------------- | ----------------------------------------- |
+| `NO_COLOR` set (any value) | colour off — wins over everything          |
+| `FORCE_COLOR` set, not `0` | colour on even when piped (useful in CI)   |
+| `TERM=dumb`                | colour off                                 |
+| stdout is not a terminal   | colour off                                 |
+| Windows legacy console     | colour off if VT processing is unavailable  |
+
+Override it when you need to:
+
+```python
+Terminal.enable_colors(True)    # force on — e.g. writing to a file you'll `less -R`
+Terminal.disable_colors()       # force off
+Terminal.enable_colors(None)    # back to automatic
+```
+
+Truecolor is **downgraded, not dropped**, on terminals that can't do 24-bit:
+`Gradient.fire("text")` renders through the 256-colour cube or the 16 base
+colours as needed, so gradients degrade instead of breaking.
+
+Width helpers, because `len()` is the wrong measure for anything you align:
+
+```python
+Terminal.display_width("日本語")           # 6, not 3 — CJK and emoji are two columns
+Terminal.pad_display("日本", 6, "center")  # pads by columns, not characters
+Terminal.strip_ansi(text)                  # removes colour, cursor moves, erases
+Terminal.size()                            # (columns, rows)
+```
 
 ---
 

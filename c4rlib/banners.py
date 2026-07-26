@@ -10,7 +10,7 @@ class Box:
         bottom = bl + h * w + br
         result = f"{top}\n{middle}\n{bottom}"
         if color:
-            result = f"{ColorUtils.hex(color)}{result}{ColorUtils.RESET}"
+            result = f"{ColorUtils.hex(color)}{result}{ColorUtils.reset()}"
         return result
 
     @staticmethod
@@ -62,9 +62,9 @@ class Box:
         w      = len(text) + 2
         col    = ColorUtils.hex(color)
         glow   = ColorUtils.hex(ColorUtils.lighten(color, 0.3)) if color else col
-        top    = col + "╔" + "═" * w + "╗" + ColorUtils.RESET
-        mid    = col + "║" + ColorUtils.RESET + f" {glow}{text}{ColorUtils.RESET} " + col + "║" + ColorUtils.RESET
-        bot    = col + "╚" + "═" * w + "╝" + ColorUtils.RESET
+        top    = col + "╔" + "═" * w + "╗" + ColorUtils.reset()
+        mid    = col + "║" + ColorUtils.reset() + f" {glow}{text}{ColorUtils.reset()} " + col + "║" + ColorUtils.reset()
+        bot    = col + "╚" + "═" * w + "╝" + ColorUtils.reset()
         return f"{top}\n{mid}\n{bot}"
 
     @staticmethod
@@ -95,7 +95,7 @@ class Box:
         rows.append(bottom)
         result = "\n".join(rows)
         if color:
-            result = f"{ColorUtils.hex(color)}{result}{ColorUtils.RESET}"
+            result = f"{ColorUtils.hex(color)}{result}{ColorUtils.reset()}"
         return result
 
     @staticmethod
@@ -109,7 +109,7 @@ class Box:
         width  = max(max(len(l) for l in lines), len(title)) + 2
         bc     = ColorUtils.hex(border_color)
         tc     = ColorUtils.hex(title_color)
-        reset  = ColorUtils.RESET
+        reset  = ColorUtils.reset()
         rows   = []
         rows.append(bc + tl + h*(width+2) + tr + reset)
         rows.append(bc + v + reset + "  " + tc + title.center(width) + reset + " " + bc + v + reset)
@@ -127,7 +127,7 @@ class Banner:
         pad    = char * 14
         result = f"{pad} {text} {pad}"
         if color:
-            result = f"{ColorUtils.hex(color)}{result}{ColorUtils.RESET}"
+            result = f"{ColorUtils.hex(color)}{result}{ColorUtils.reset()}"
         return result
 
     @staticmethod
@@ -135,14 +135,14 @@ class Banner:
         bar    = "═" * (len(text) + 28)
         result = f"{bar}\n{text.center(len(bar))}\n{bar}"
         if color:
-            result = f"{ColorUtils.hex(color)}{result}{ColorUtils.RESET}"
+            result = f"{ColorUtils.hex(color)}{result}{ColorUtils.reset()}"
         return result
 
     @staticmethod
     def arrow_line(text: str, color: str = None) -> str:
         result = f"─═{'═'*(len(text)//2)}❯❯ {text} ❮❮{'═'*(len(text)//2)}═─"
         if color:
-            result = f"{ColorUtils.hex(color)}{result}{ColorUtils.RESET}"
+            result = f"{ColorUtils.hex(color)}{result}{ColorUtils.reset()}"
         return result
 
     @staticmethod
@@ -150,56 +150,56 @@ class Banner:
         bar    = "━" * (len(text) + 12)
         result = f"❤{bar}❤\n    {text}\n❤{bar}❤"
         if color:
-            result = f"{ColorUtils.hex(color)}{result}{ColorUtils.RESET}"
+            result = f"{ColorUtils.hex(color)}{result}{ColorUtils.reset()}"
         return result
 
     @staticmethod
     def wave_line(text: str, color: str = None) -> str:
         result = f"~{'≈'*8} {text} {'≈'*8}~"
         if color:
-            result = f"{ColorUtils.hex(color)}{result}{ColorUtils.RESET}"
+            result = f"{ColorUtils.hex(color)}{result}{ColorUtils.reset()}"
         return result
 
     @staticmethod
     def star_line(text: str, color: str = None) -> str:
         result = f"{'★'*4} {text} {'★'*4}"
         if color:
-            result = f"{ColorUtils.hex(color)}{result}{ColorUtils.RESET}"
+            result = f"{ColorUtils.hex(color)}{result}{ColorUtils.reset()}"
         return result
 
     @staticmethod
     def dot_line(text: str, color: str = None) -> str:
         result = f"{'·'*10} {text} {'·'*10}"
         if color:
-            result = f"{ColorUtils.hex(color)}{result}{ColorUtils.RESET}"
+            result = f"{ColorUtils.hex(color)}{result}{ColorUtils.reset()}"
         return result
 
     @staticmethod
     def slash_line(text: str, color: str = None) -> str:
         result = f"{'╱╲'*4} {text} {'╱╲'*4}"
         if color:
-            result = f"{ColorUtils.hex(color)}{result}{ColorUtils.RESET}"
+            result = f"{ColorUtils.hex(color)}{result}{ColorUtils.reset()}"
         return result
 
     @staticmethod
     def diamond_line(text: str, color: str = None) -> str:
         result = f"◆{'─'*6}◆ {text} ◆{'─'*6}◆"
         if color:
-            result = f"{ColorUtils.hex(color)}{result}{ColorUtils.RESET}"
+            result = f"{ColorUtils.hex(color)}{result}{ColorUtils.reset()}"
         return result
 
     @staticmethod
     def lightning_line(text: str, color: str = None) -> str:
         result = f"⚡{'━'*6} {text} {'━'*6}⚡"
         if color:
-            result = f"{ColorUtils.hex(color)}{result}{ColorUtils.RESET}"
+            result = f"{ColorUtils.hex(color)}{result}{ColorUtils.reset()}"
         return result
 
     @staticmethod
     def fire_line(text: str, color: str = None) -> str:
         result = f"🔥{'─'*6} {text} {'─'*6}🔥"
         if color:
-            result = f"{ColorUtils.hex(color)}{result}{ColorUtils.RESET}"
+            result = f"{ColorUtils.hex(color)}{result}{ColorUtils.reset()}"
         return result
 
     @staticmethod
@@ -214,7 +214,7 @@ class Banner:
         mid    = "║" + text.center(width) + "║"
         bot    = "╚" + "═" * width + "╝"
         col    = ColorUtils.hex(color)
-        return f"{col}{top}\n{mid}\n{bot}{ColorUtils.RESET}"
+        return f"{col}{top}\n{mid}\n{bot}{ColorUtils.reset()}"
 
     @staticmethod
     def gradient_title(text: str, start: tuple = (0,200,255), end: tuple = (200,0,255)) -> str:
@@ -228,14 +228,14 @@ class Banner:
     def center(text: str, width: int = 80, color: str = None) -> str:
         result = text.center(width)
         if color:
-            result = f"{ColorUtils.hex(color)}{result}{ColorUtils.RESET}"
+            result = f"{ColorUtils.hex(color)}{result}{ColorUtils.reset()}"
         return result
 
     @staticmethod
     def section(text: str, color: str = "#00ccff") -> str:
         col    = ColorUtils.hex(color)
         gray   = ColorUtils.hex("#6c757d")
-        reset  = ColorUtils.RESET
+        reset  = ColorUtils.reset()
         line   = gray + "─" * 60 + reset
         label  = col + f"  {text}  " + reset
         return f"{line}\n{label}\n{line}"
@@ -250,7 +250,7 @@ class Banner:
         rendered = Figlet.render(text, font=font) if _HAS_FIGLET else Ascii.banner(text, "block")
         if color:
             col = ColorUtils.hex(color)
-            return "\n".join(col + line + ColorUtils.RESET for line in rendered.split("\n"))
+            return "\n".join(col + line + ColorUtils.reset() for line in rendered.split("\n"))
         return rendered
 
     @staticmethod

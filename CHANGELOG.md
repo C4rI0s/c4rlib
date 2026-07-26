@@ -6,10 +6,51 @@ versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [3.1.0] — 2026-07-26
+
+### Security
+- **Credential generators now draw from `secrets` instead of `random`.**
+  `Utils.generate_token`, `generate_hex_token`, `generate_pin` and
+  `generate_password` were built on `random`, a Mersenne Twister whose internal
+  state — and therefore every future value — can be reconstructed from enough
+  observed output. Anything generated with these functions in an earlier version
+  should be considered predictable and rotated. The fake-data generators
+  (`random_name`, `random_ipv4`, `random_credit_card`…) still use `random` by
+  design; they are fixtures, not credentials, and are now documented as such.
+
 ### Added
+- **`Terminal` — capability detection and a central colour gate.** Colour is
+  emitted only when something can render it: `NO_COLOR` and `FORCE_COLOR` are
+  honoured, `TERM=dumb` and non-tty output turn escapes off, and Windows legacy
+  consoles are detected. Previously `python app.py > log.txt` wrote raw escape
+  sequences into the file.
+  - `Terminal.enable_colors(True/False/None)` to force or restore auto-detection.
+  - `Terminal.color_depth()` with automatic downgrading: truecolor sequences
+    become 256-colour or the nearest of the 16 base colours when that is all the
+    terminal supports.
+  - `Terminal.display_width()` / `pad_display()` — column-accurate measurement
+    that counts CJK and emoji as two and combining marks as zero.
+  - `Terminal.strip_ansi()`, `size()`, and `info()` for bug reports.
+- `ColorUtils.reset()` — the gated equivalent of the `RESET` constant, which is
+  kept for backwards compatibility.
+- `ColorUtils.hex_to_rgb` accepts the `#rgb` shorthand and raises `ValueError`
+  on malformed input instead of `IndexError`.
+
+### Fixed
+- **`Table` measured column widths with `len()`**, so any row containing CJK or
+  emoji ragged the borders — a three-character string like `日本語` occupies six
+  columns. Widths and padding now use display width.
+- **`Table`'s title row was `len(columns)` characters wider than every other
+  row.** The inner-width formula counted each column once too often; invisible
+  with ASCII titles, obvious once measured.
+- `ColorUtils.palette(color, steps=1)` raised `ZeroDivisionError`; it now returns
+  a single-entry list, and `steps < 1` returns an empty one.
+
+### Added — repository and tooling
 - Public GitHub repository: MIT `LICENSE`, `CONTRIBUTING.md`, issue templates.
-- `tests/` — pytest suite covering imports, `__all__` integrity, colour maths,
-  crypto vectors, text/utils/files helpers, and ANSI escape balance.
+- `tests/` — pytest suite (268 tests) covering imports, `__all__` integrity,
+  colour maths, crypto vectors, text/utils/files helpers, ANSI escape balance,
+  and terminal capability detection.
 - `.github/workflows/ci.yml` — build + test matrix on Ubuntu, Windows and macOS
   across Python 3.9, 3.12 and 3.13.
 - `.github/workflows/publish.yml` — automatic PyPI release on `v*` tags via
@@ -79,7 +120,8 @@ Released before the changelog was kept. Core toolkit: `ColorUtils`,
 `Gradient`, `Logger`, `Box`, `Banner`, `TextStyle`, `Spinner`, `ProgressBar`,
 `Table`, `Console`, `Http`, `Crypto`, `Files`, `Discord`, `Utils`.
 
-[Unreleased]: https://github.com/C4rI0s/c4rlib/compare/v3.0.3...HEAD
+[Unreleased]: https://github.com/C4rI0s/c4rlib/compare/v3.1.0...HEAD
+[3.1.0]: https://github.com/C4rI0s/c4rlib/compare/v3.0.3...v3.1.0
 [3.0.3]: https://github.com/C4rI0s/c4rlib/compare/v3.0.2...v3.0.3
 [3.0.2]: https://github.com/C4rI0s/c4rlib/compare/v3.0.1...v3.0.2
 [3.0.1]: https://github.com/C4rI0s/c4rlib/compare/v3.0.0...v3.0.1

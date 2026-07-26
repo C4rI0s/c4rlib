@@ -113,6 +113,15 @@ def test_table_renders_without_headers_or_rows():
     assert _is_balanced(empty.render())
 
 
+@pytest.mark.parametrize("columns", [1, 2, 3, 5])
+def test_titled_table_is_rectangular(columns):
+    """The title row used to be `columns` characters wider than every other."""
+    table = Table(headers=[f"c{i}" for i in range(columns)], title="Report")
+    table.add_row([f"value{i}" for i in range(columns)])
+    widths = {len(SGR.sub("", line)) for line in table.render().splitlines()}
+    assert len(widths) == 1, f"{columns} columns produced ragged widths: {widths}"
+
+
 def test_table_pads_short_rows():
     table = Table(headers=["a", "b", "c"])
     table.add_row([1])

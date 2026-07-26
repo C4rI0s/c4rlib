@@ -6,6 +6,7 @@ import shutil
 import random
 import threading
 from .colors import ColorUtils, Gradient
+from .terminal import Terminal
 
 
 try:
@@ -64,7 +65,7 @@ class Figlet:
         out = Figlet.render(text, font=font)
         if color:
             col = ColorUtils.hex(color)
-            out = "\n".join(col + line + ColorUtils.RESET for line in out.split("\n"))
+            out = "\n".join(col + line + ColorUtils.reset() for line in out.split("\n"))
         print(out)
 
     @staticmethod
@@ -81,7 +82,7 @@ class Figlet:
                 r = int((1 - t) * start[0] + t * end[0])
                 g = int((1 - t) * start[1] + t * end[1])
                 b = int((1 - t) * start[2] + t * end[2])
-                result.append(f"\033[38;2;{r};{g};{b}m{line}{ColorUtils.RESET}")
+                result.append(f"\033[38;2;{r};{g};{b}m{line}{ColorUtils.reset()}")
             return "\n".join(result)
         return "\n".join(Gradient.apply(line, start, end) for line in lines)
 
@@ -108,11 +109,11 @@ class Figlet:
         if limit:
             fonts = fonts[:limit]
         for font in fonts:
-            print(f"\n{ColorUtils.hex('#9b5de5')}═══ {font} ═══{ColorUtils.RESET}")
+            print(f"\n{ColorUtils.hex('#9b5de5')}═══ {font} ═══{ColorUtils.reset()}")
             try:
                 Figlet.print(text, font=font)
             except Exception:
-                print(f"  {ColorUtils.hex('#d00000')}[failed]{ColorUtils.RESET}")
+                print(f"  {ColorUtils.hex('#d00000')}[failed]{ColorUtils.reset()}")
 
     @staticmethod
     def boxed(text: str, font: str = "standard", color: str = "#00ccff",
@@ -122,7 +123,7 @@ class Figlet:
         width    = max(len(l) for l in lines) if lines else 0
         bc       = ColorUtils.hex(border_color)
         tc       = ColorUtils.hex(color)
-        reset    = ColorUtils.RESET
+        reset    = ColorUtils.reset()
         top      = bc + "╔" + "═" * (width + 2) + "╗" + reset
         bot      = bc + "╚" + "═" * (width + 2) + "╝" + reset
         body     = []
@@ -179,7 +180,7 @@ class ImageAscii:
                 else:
                     row.append(ch)
             if color:
-                row.append(ColorUtils.RESET)
+                row.append(ColorUtils.reset())
             out_lines.append("".join(row))
         return "\n".join(out_lines)
 
@@ -364,7 +365,7 @@ class Sprite:
 
     def _draw(self, x: int, y: int, frame) -> None:
         col   = ColorUtils.hex(self.color) if self.color else ""
-        reset = ColorUtils.RESET if self.color else ""
+        reset = ColorUtils.reset() if self.color else ""
         for i, line in enumerate(frame):
             _at(x, y + i, col + line + reset)
 
@@ -549,7 +550,7 @@ class Sprite:
                 R = int(r * t); G = int(g * t); B = int(b * t)
                 col = f"\033[38;2;{R};{G};{B}m"
                 for li, line in enumerate(frame):
-                    _at(x, y + li, col + line + ColorUtils.RESET)
+                    _at(x, y + li, col + line + ColorUtils.reset())
                 sys.stdout.flush()
                 time.sleep(delay)
             if fade_out:
@@ -615,8 +616,8 @@ class Sprite:
                     if positions[i] >= length and winner is None:
                         winner = (names[i], i)
                     y = y_off + i * (s.height + 1)
-                    _at(1, y, f"{ColorUtils.hex('#6c757d')}|{ColorUtils.RESET}")
-                    _at(length + 4, y, f"{ColorUtils.hex('#ffd60a')}|🏁{ColorUtils.RESET}")
+                    _at(1, y, f"{ColorUtils.hex('#6c757d')}|{ColorUtils.reset()}")
+                    _at(length + 4, y, f"{ColorUtils.hex('#ffd60a')}|🏁{ColorUtils.reset()}")
                     frame = s.frames[(s._idx) % len(s.frames)]
                     s._idx += 1
                     px = 2 + min(int(positions[i]), length)
@@ -626,7 +627,7 @@ class Sprite:
         finally:
             _show()
             _at(1, y_off + len(sprites) * (sprites[0].height + 1) + 2,
-                f" {ColorUtils.hex('#ffd60a')}🏆 Winner: {winner[0]}!{ColorUtils.RESET}\n")
+                f" {ColorUtils.hex('#ffd60a')}🏆 Winner: {winner[0]}!{ColorUtils.reset()}\n")
             sys.stdout.flush()
         return winner[0]
 
@@ -643,7 +644,7 @@ class Ascii:
                 rows[i] += row + " "
         out = "\n".join(rows)
         if color:
-            out = "\n".join(ColorUtils.hex(color) + r + ColorUtils.RESET for r in rows)
+            out = "\n".join(ColorUtils.hex(color) + r + ColorUtils.reset() for r in rows)
         return out
 
     @staticmethod
@@ -675,7 +676,7 @@ class Ascii:
         }
         d = styles.get(style, styles["dash"])[:w]
         if color:
-            d = ColorUtils.hex(color) + d + ColorUtils.RESET
+            d = ColorUtils.hex(color) + d + ColorUtils.reset()
         return d
 
     @staticmethod
@@ -692,7 +693,7 @@ class Ascii:
         width = max(len(l) for l in lines)
         bc    = ColorUtils.hex(border_color)
         tc    = ColorUtils.hex(color)
-        rst   = ColorUtils.RESET
+        rst   = ColorUtils.reset()
         top   = bc + "╭" + "─" * (width + 4) + "╮" + rst
         bot   = bc + "╰" + "─" * (width + 4) + "╯" + rst
         body  = "\n".join(bc + "│ " + rst + " " + tc + l.ljust(width) + rst + " " + bc + " │" + rst
