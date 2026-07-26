@@ -10,6 +10,8 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-c800ff)](LICENSE)
 [![Downloads](https://img.shields.io/pypi/dm/c4rlib?color=c800ff)](https://pypi.org/project/c4rlib/)
 
+![c4rlib](assets/gradients.gif)
+
 </div>
 
 > Colors, gradients, logging, spinners, progress bars, tables, HTTP, crypto, files, Discord helpers — *plus* ASCII art (FIGlet, image→ASCII, animated sprites), full-screen terminal animations (matrix rain, fireworks, glitch…), cross-platform audio, interactive menus / forms / dashboards, and the **FX** layer that composes everything into one-liner intros, hacker-movie sequences, and celebrations.
@@ -24,22 +26,29 @@ pip install c4rlib
 
 ## Gallery
 
-> **Recordings pending.** The demos are scripted as reproducible
-> [vhs](https://github.com/charmbracelet/vhs) tapes in [`demos/`](demos/) rather
-> than hand-recorded, so they can be regenerated whenever the API changes. Run
-> them once to produce the GIFs, then replace each line below with its image.
+**`Animations.matrix_rain()`** — one call, full screen.
 
-| Demo                                             | Tape                  | Output                 |
-| ------------------------------------------------ | --------------------- | ---------------------- |
-| `FX.intro` with fireworks                        | `demos/intro.tape`      | `assets/intro.gif`       |
-| `Animations.matrix_rain` full-screen             | `demos/matrix.tape`     | `assets/matrix.gif`      |
-| `Figlet` + `Gradient` + `Box` + `Banner`         | `demos/gradients.tape`  | `assets/gradients.gif`   |
-| `Sprite.move` and `Sprite.parade`                | `demos/sprites.tape`    | `assets/sprites.gif`     |
-| `Menu.select` driven by keystrokes, plus `Table` | `demos/interactive.tape`| `assets/interactive.gif` |
+![matrix rain](assets/matrix.gif)
 
-```bash
-cd demos && for tape in *.tape; do vhs "$tape"; done
-```
+**`Figlet` + `Gradient` + `Box` + `Banner`** — 64 gradient presets, 12 box styles, 400+ FIGlet fonts.
+
+![gradients and banners](assets/gradients.gif)
+
+**`Table` + `Logger`** — zebra rows, titles, and column widths that survive CJK and emoji.
+
+![table and logger](assets/table.gif)
+
+**`Effect`** — typewriter, scramble, wave, glitch.
+
+![text effects](assets/effects.gif)
+
+**`Sprite`** — animated ASCII that moves, bounces and bobs.
+
+![sprites](assets/sprites.gif)
+
+<sub>Every GIF is generated from [`demos/render_gif.py`](demos/render_gif.py) —
+`python demos/render_gif.py` regenerates them all from the live API, so they can
+never drift from what the library actually does.</sub>
 
 ---
 

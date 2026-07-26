@@ -1,52 +1,60 @@
 # Demo recordings
 
-The GIFs in the main README are generated from these
-[vhs](https://github.com/charmbracelet/vhs) scripts, so they can be regenerated
-whenever the API changes instead of being re-recorded by hand.
+The GIFs in the main README are generated from code, not recorded by hand, so
+they can never drift from what the library actually does.
 
-## Setup
-
-```bash
-winget install charmbracelet.vhs     # Windows
-brew install vhs                     # macOS
-# Linux: see https://github.com/charmbracelet/vhs#installation
-```
-
-vhs pulls in `ttyd` and `ffmpeg`. On Windows, running the tapes from WSL is
-smoother than from PowerShell — `ttyd` behaves better there.
-
-## Recording
-
-From this directory, with `c4rlib` installed (`pip install -e ..`):
+## The default: `render_gif.py`
 
 ```bash
-vhs intro.tape          # → ../assets/intro.gif
-vhs matrix.tape         # → ../assets/matrix.gif
-vhs gradients.tape      # → ../assets/gradients.gif
-vhs sprites.tape        # → ../assets/sprites.gif
-vhs interactive.tape    # → ../assets/interactive.gif
+python demos/render_gif.py            # regenerate every GIF into assets/
+python demos/render_gif.py matrix     # just one
 ```
 
-Or all of them:
+Needs nothing but Pillow, which `c4rlib` already depends on. Run it from the
+repository root.
 
-```bash
-for tape in *.tape; do vhs "$tape"; done
-```
+How it works: a small terminal emulator consumes the escape sequences the
+library emits, `sys.stdout` is redirected into it, and `time.sleep` is replaced
+by a function that records a frame and advances a **virtual clock** that
+`time.time` then reads. Two consequences worth knowing:
 
-| Tape               | Shows                                              |
-| ------------------ | -------------------------------------------------- |
-| `intro.tape`       | `FX.intro` with the fireworks style                |
-| `matrix.tape`      | `Animations.matrix_rain` full-screen               |
-| `gradients.tape`   | `Figlet`, `Gradient`, `Box` and `Banner` output     |
-| `sprites.tape`     | `Sprite.move` and `Sprite.parade`                  |
-| `interactive.tape` | `Menu.select` driven by keystrokes, plus `Table`    |
+- Frames come from the library's own frame boundaries, so nothing is sampled,
+  missed or duplicated.
+- Recording runs as fast as the CPU allows and is deterministic — a four-second
+  animation does not take four seconds to render, and produces the same GIF
+  every time.
+
+Each demo is a plain function in the `DEMOS` table at the bottom of the file,
+with its font size, frame cap and palette size. Add one there to add a GIF.
+
+| GIF                    | Shows                                            |
+| ---------------------- | ------------------------------------------------ |
+| `assets/matrix.gif`    | `Animations.matrix_rain`                          |
+| `assets/gradients.gif` | `Figlet`, `Gradient`, `Box`, `Banner`, `Ascii`    |
+| `assets/table.gif`     | `Table` with a title and zebra rows, plus `Logger`|
+| `assets/effects.gif`   | `Effect.typewriter / scramble / wave / glitch`    |
+| `assets/sprites.gif`   | `Sprite.move` with bob                            |
+
+### Fonts
+
+The renderer looks for a monospace TTF (Consolas, DejaVu Sans Mono, Menlo) and
+a CJK fallback (MS Gothic, Yu Gothic, Noto Sans CJK). The fallback matters:
+`matrix_rain` is full of katakana, which Latin monospace fonts render as tofu.
+
+## Why not vhs?
+
+[vhs](https://github.com/charmbracelet/vhs) captures a real terminal and is the
+obvious tool for this, but it drives a headless Chromium against a `ttyd`
+server, and that combination hangs on Windows even with vhs, ttyd, ffmpeg and
+Chrome all installed. Since these GIFs have to be regeneratable by anyone on any
+platform — and in CI — `render_gif.py` is the supported path. If you prefer vhs
+on Linux or macOS, the demo functions in `render_gif.py` are a direct
+translation guide for writing tapes.
 
 ## Notes
 
-- `sound=False` everywhere — recordings are silent, and the audio calls block.
-- The `Sleep` durations are tuned to each animation's `duration`. If you change
-  a `duration` in a tape, change its `Sleep` to match or the GIF cuts off.
-- Terminal size is fixed by `Set Width`/`Set Height` so full-screen animations
-  compose the same way on every machine.
-- Keep the GIFs under about 4 MB each; GitHub renders them inline but large
-  files make the README crawl on mobile.
+- `sound=False` everywhere — recordings are silent and the audio calls block.
+- Keep each GIF under about 4 MB. `render_gif.py` warns when one goes over and
+  the per-demo `max_frames` and font size are the knobs to turn.
+- `Terminal.enable_colors(True)` is forced during recording, since stdout is
+  redirected and would otherwise correctly suppress all colour.

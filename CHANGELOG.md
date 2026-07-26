@@ -55,8 +55,13 @@ versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   across Python 3.9, 3.12 and 3.13.
 - `.github/workflows/publish.yml` — automatic PyPI release on `v*` tags via
   Trusted Publishing (no long-lived API token).
-- `demos/*.tape` — reproducible [vhs](https://github.com/charmbracelet/vhs)
-  scripts that regenerate the README GIFs.
+- `demos/render_gif.py` — regenerates every README GIF from the live API using
+  only Pillow. A miniature terminal emulator consumes the library's escape
+  sequences while a virtual clock replaces `time.sleep`, so recording is
+  deterministic, needs no external tools, and captures exactly the frames the
+  animation produces.
+- `assets/*.gif` — the rendered gallery: matrix rain, gradients and banners,
+  tables and logging, text effects, sprites.
 
 ### Changed
 - Interactive showcases moved from `tests/` to `examples/`; `tests/` now holds

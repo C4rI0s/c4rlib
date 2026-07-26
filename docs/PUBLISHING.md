@@ -71,15 +71,13 @@ To rehearse the full upload against TestPyPI, add a second Trusted Publisher at
 
 ## Regenerating the README demos
 
-The GIFs are produced from the `.tape` scripts in `demos/`, so they stay in sync
-with the real API. Requires [vhs](https://github.com/charmbracelet/vhs):
+The GIFs are generated from the live API, so they stay in sync with what the
+library actually does. Only Pillow is needed — already a dependency:
 
 ```bash
-winget install charmbracelet.vhs     # Windows
-brew install vhs                     # macOS
-
-cd demos
-vhs intro.tape        # writes ../assets/intro.gif
+python demos/render_gif.py            # all of them, into assets/
+python demos/render_gif.py matrix     # just one
 ```
 
-See [demos/README.md](../demos/README.md) for the full list.
+Worth regenerating whenever a rendered surface changes visibly. See
+[demos/README.md](../demos/README.md).
