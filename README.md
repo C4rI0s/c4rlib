@@ -10,9 +10,6 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-c800ff)](LICENSE)
 [![Downloads](https://img.shields.io/pypi/dm/c4rlib?color=c800ff)](https://pypi.org/project/c4rlib/)
 
-<!-- GIF: demos/intro.tape → assets/intro.gif -->
-<!-- ![c4rlib intro](assets/intro.gif) -->
-
 </div>
 
 > Colors, gradients, logging, spinners, progress bars, tables, HTTP, crypto, files, Discord helpers — *plus* ASCII art (FIGlet, image→ASCII, animated sprites), full-screen terminal animations (matrix rain, fireworks, glitch…), cross-platform audio, interactive menus / forms / dashboards, and the **FX** layer that composes everything into one-liner intros, hacker-movie sequences, and celebrations.
@@ -27,17 +24,22 @@ pip install c4rlib
 
 ## Gallery
 
-<!-- Regenerate every GIF below with the tapes in demos/ — see demos/README.md -->
+> **Recordings pending.** The demos are scripted as reproducible
+> [vhs](https://github.com/charmbracelet/vhs) tapes in [`demos/`](demos/) rather
+> than hand-recorded, so they can be regenerated whenever the API changes. Run
+> them once to produce the GIFs, then replace each line below with its image.
 
-|                                                    |                                                          |
-| -------------------------------------------------- | -------------------------------------------------------- |
-| **Matrix rain** — `Animations.matrix_rain()`        | **Gradients & FIGlet** — `Gradient`, `Figlet`, `Box`      |
-| <!-- ![matrix](assets/matrix.gif) -->              | <!-- ![gradients](assets/gradients.gif) -->              |
-| **Sprites** — `Sprite.move()`, `Sprite.parade()`    | **Interactive** — `Menu.select()`, `Table`                |
-| <!-- ![sprites](assets/sprites.gif) -->            | <!-- ![interactive](assets/interactive.gif) -->          |
+| Demo                                             | Tape                  | Output                 |
+| ------------------------------------------------ | --------------------- | ---------------------- |
+| `FX.intro` with fireworks                        | `demos/intro.tape`      | `assets/intro.gif`       |
+| `Animations.matrix_rain` full-screen             | `demos/matrix.tape`     | `assets/matrix.gif`      |
+| `Figlet` + `Gradient` + `Box` + `Banner`         | `demos/gradients.tape`  | `assets/gradients.gif`   |
+| `Sprite.move` and `Sprite.parade`                | `demos/sprites.tape`    | `assets/sprites.gif`     |
+| `Menu.select` driven by keystrokes, plus `Table` | `demos/interactive.tape`| `assets/interactive.gif` |
 
-> **The GIFs are not recorded yet.** Run `vhs <tape>` in [`demos/`](demos/) to
-> generate them into `assets/`, then uncomment the image lines above.
+```bash
+cd demos && for tape in *.tape; do vhs "$tape"; done
+```
 
 ---
 
