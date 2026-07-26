@@ -1,3 +1,4 @@
+from .terminal import Terminal
 from .colors import ColorUtils, Gradient, GradientPresets
 
 
@@ -85,13 +86,15 @@ class Box:
             "ascii":   ("+","+","+","+","-","|"),
         }
         tl, tr, bl, br, h, v = styles.get(style, styles["rounded"])
-        width  = max(len(l) for l in lines) + 2
-        top    = tl + h * (width + 2) + tr
-        bottom = bl + h * (width + 2) + br
+        width  = max(Terminal.display_width(l) for l in lines) + 2
+        # Content rows carry two spaces of padding on the left and one on the
+        # right, so the border spans width + 3. It used to span width + 2,
+        # leaving every box one character short of its own contents.
+        top    = tl + h * (width + 3) + tr
+        bottom = bl + h * (width + 3) + br
         rows   = [top]
         for line in lines:
-            padding = " " * (width - len(line))
-            rows.append(f"{v}  {line}{padding} {v}")
+            rows.append(f"{v}  {Terminal.pad_display(line, width)} {v}")
         rows.append(bottom)
         result = "\n".join(rows)
         if color:
@@ -106,18 +109,22 @@ class Box:
             "heavy":   ("┏","┓","┗","┛","━","┃","┣","┫"),
         }
         tl, tr, bl, br, h, v, ml, mr = styles.get(style, styles["rounded"])
-        width  = max(max(len(l) for l in lines), len(title)) + 2
+        width  = max(max(Terminal.display_width(l) for l in lines),
+                     Terminal.display_width(title)) + 2
         bc     = ColorUtils.hex(border_color)
         tc     = ColorUtils.hex(title_color)
         reset  = ColorUtils.reset()
+        # Border spans width + 3 to match the content rows' 2 + width + 1.
         rows   = []
-        rows.append(bc + tl + h*(width+2) + tr + reset)
-        rows.append(bc + v + reset + "  " + tc + title.center(width) + reset + " " + bc + v + reset)
-        rows.append(bc + ml + h*(width+2) + mr + reset)
+        rows.append(bc + tl + h*(width+3) + tr + reset)
+        rows.append(bc + v + reset + "  " + tc +
+                    Terminal.pad_display(title, width, "center") + reset +
+                    " " + bc + v + reset)
+        rows.append(bc + ml + h*(width+3) + mr + reset)
         for line in lines:
-            padding = " " * (width - len(line))
-            rows.append(bc + v + reset + f"  {line}{padding} " + bc + v + reset)
-        rows.append(bc + bl + h*(width+2) + br + reset)
+            rows.append(bc + v + reset + f"  {Terminal.pad_display(line, width)} " +
+                        bc + v + reset)
+        rows.append(bc + bl + h*(width+3) + br + reset)
         return "\n".join(rows)
 
 

@@ -17,7 +17,8 @@
 > Colors, gradients, logging, spinners, progress bars, tables, HTTP, crypto, files, Discord helpers — *plus* ASCII art (FIGlet, image→ASCII, animated sprites), full-screen terminal animations (matrix rain, fireworks, glitch…), cross-platform audio, interactive menus / forms / dashboards, and the **FX** layer that composes everything into one-liner intros, hacker-movie sequences, and celebrations.
 
 ```bash
-pip install c4rlib
+pipx run c4rlib      # see the whole thing, install nothing
+pip install c4rlib   # then `from c4rlib import FX`
 ```
 
 `pyfiglet` and `pillow` are installed automatically. No other runtime dependencies.
@@ -107,6 +108,31 @@ pip install c4rlib
 ```
 
 Requires Python 3.9+. Auto-installs `pyfiglet` and `pillow`.
+
+### Command line
+
+Installing puts a `c4rlib` command on your PATH, and `pipx` can run it without
+installing anything at all:
+
+```bash
+pipx run c4rlib          # the demo reel
+c4rlib --quiet           # same, without sound
+c4rlib --info            # what this terminal supports — paste it in bug reports
+python -m c4rlib         # equivalent, in a checkout
+```
+
+`--info` is the fastest way to answer "why is my output not coloured?":
+
+```
+╭──────────────────────────────────╮
+│             terminal             │
+├──────────────────────────────────┤
+│  is_tty          False           │
+│  colors_enabled  False           │
+│  color_depth     none            │
+│  size            (80, 24)        │
+╰──────────────────────────────────╯
+```
 
 ---
 

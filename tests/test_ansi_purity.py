@@ -10,7 +10,7 @@ import re
 
 import pytest
 
-from c4rlib import Banner, Box, ColorUtils, Gradient, Table, TextStyle
+from c4rlib import Banner, Box, ColorUtils, Gradient, Table, Terminal, TextStyle
 
 SGR = re.compile(r"\033\[([0-9;]*)m")
 RESET_CODES = {"", "0", "00"}
@@ -111,6 +111,28 @@ def test_table_renders_without_headers_or_rows():
     assert isinstance(Table().render(), str)
     empty = Table(headers=["only", "headers"])
     assert _is_balanced(empty.render())
+
+
+@pytest.mark.parametrize("title", ["T", "terminal", "a much longer title than the body"])
+def test_titled_box_is_rectangular(title):
+    """Content rows used to be one character wider than the border."""
+    out = Box.titled(title, ["is_tty  False", "color   none"])
+    widths = {len(SGR.sub("", line)) for line in out.splitlines()}
+    assert len(widths) == 1, f"title {title!r} produced ragged widths: {widths}"
+
+
+@pytest.mark.parametrize("style", ["rounded", "double", "heavy", "simple", "ascii"])
+def test_multiline_box_is_rectangular(style):
+    out = Box.multiline(["one", "a longer line", "x"], style=style)
+    widths = {len(SGR.sub("", line)) for line in out.splitlines()}
+    assert len(widths) == 1, f"style {style} produced ragged widths: {widths}"
+
+
+def test_boxes_stay_rectangular_with_wide_characters():
+    for out in (Box.multiline(["ascii", "日本語テキスト"]),
+                Box.titled("日本語", ["ascii", "mixed 日本"])):
+        widths = {Terminal.display_width(line) for line in out.splitlines()}
+        assert len(widths) == 1, f"ragged with wide characters: {widths}"
 
 
 @pytest.mark.parametrize("columns", [1, 2, 3, 5])

@@ -6,6 +6,19 @@ versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+- **`c4rlib` command line entry point.** `pipx run c4rlib` plays the demo reel
+  without installing anything; `c4rlib --info` reports the terminal's detected
+  capabilities, which is the fastest answer to "why is my output not coloured?".
+  Also available as `python -m c4rlib`.
+
+### Fixed
+- **`Box.titled` and `Box.multiline` were one character too narrow.** Content
+  rows carry two spaces of padding on the left and one on the right, but the
+  border was drawn for two — so every multi-line box ever rendered had its
+  contents overhanging the frame. Both now measure in display columns as well,
+  so CJK and emoji no longer ragged them either.
+
 ## [3.1.0] — 2026-07-26
 
 ### Security
