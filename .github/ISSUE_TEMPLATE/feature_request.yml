@@ -1,0 +1,48 @@
+name: Feature request
+description: A new effect, sprite, gradient, melody, widget or helper
+labels: ["enhancement"]
+body:
+  - type: dropdown
+    id: area
+    attributes:
+      label: Which area?
+      options:
+        - Visual (colors, gradients, banners, text styles)
+        - ASCII (Figlet, image→ASCII, dividers)
+        - Motion (animations, effects, sprites, particles)
+        - Sound (beeps, SFX, melodies)
+        - Interactive (menu, prompt, form, dashboard)
+        - FX (composed showcases)
+        - Output (logger, spinner, progress, table, console)
+        - Infra (http, crypto, files, discord, utils)
+        - Something new entirely
+    validations:
+      required: true
+
+  - type: textarea
+    id: idea
+    attributes:
+      label: What do you want it to do?
+      description: Describe the effect or behaviour. Reference art or a video helps.
+    validations:
+      required: true
+
+  - type: textarea
+    id: api
+    attributes:
+      label: How would you call it?
+      description: Sketch the API you'd want. One-liners are the house style.
+      render: python
+      placeholder: |
+        FX.heist_intro("PAYLOAD", duration=4.0, sound=True)
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: constraints
+    attributes:
+      label: Constraints you've considered
+      options:
+        - label: It works without a truecolor terminal (or degrades sensibly)
+        - label: It needs no new runtime dependency
+        - label: I'm willing to open the PR

@@ -1,0 +1,48 @@
+# ── Secrets (never commit) ────────────────────────────────────────────
+.pypirc
+*Recovery-Codes*
+.env
+.env.*
+*.pem
+*.key
+
+# ── Build artifacts ───────────────────────────────────────────────────
+dist/
+build/
+*.egg-info/
+.eggs/
+wheels/
+
+# ── Python ────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# ── Virtualenvs ───────────────────────────────────────────────────────
+.venv/
+venv/
+env/
+ENV/
+
+# ── Tooling caches ────────────────────────────────────────────────────
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+
+# ── Editors / OS ──────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── Demo scratch (the .gif files ARE committed — README links them) ───
+demos/*.ascii
+demos/frames/

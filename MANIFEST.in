@@ -1,0 +1,10 @@
+recursive-include c4rlib *.py
+include README.md
+include LICENSE
+include CHANGELOG.md
+include pyproject.toml
+exclude .pypirc
+prune demos
+prune examples
+prune tests
+prune .github

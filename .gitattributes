@@ -1,0 +1,20 @@
+# Normalise line endings in the repository to LF; check out native on Windows.
+* text=auto eol=lf
+
+# These must be LF even on Windows checkouts — they run on Linux runners
+# or are consumed by tools that reject CRLF.
+*.yml       text eol=lf
+*.yaml      text eol=lf
+*.tape      text eol=lf
+*.sh        text eol=lf
+
+# Binary — never touch.
+*.gif       binary
+*.png       binary
+*.jpg       binary
+*.wav       binary
+*.whl       binary
+*.gz        binary
+
+# Keep generated demo GIFs out of diffs and language stats.
+assets/**   linguist-generated=true

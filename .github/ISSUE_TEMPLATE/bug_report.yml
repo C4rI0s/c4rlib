@@ -1,0 +1,71 @@
+name: Bug report
+description: Something renders wrong, sounds wrong, or crashes
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Most c4rlib bugs are terminal-specific. The environment fields below are
+        what make them reproducible — please don't skip them.
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What you saw, and what you expected instead.
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: Minimal reproduction
+      description: The smallest snippet that shows the problem.
+      render: python
+      placeholder: |
+        from c4rlib import Gradient
+        print(Gradient.fire("hello"))
+    validations:
+      required: true
+
+  - type: input
+    id: os
+    attributes:
+      label: OS
+      placeholder: "Windows 11 24H2 / Ubuntu 24.04 / macOS 15.1"
+    validations:
+      required: true
+
+  - type: input
+    id: terminal
+    attributes:
+      label: Terminal emulator
+      description: Including version if you know it.
+      placeholder: "Windows Terminal 1.21 / iTerm2 3.5 / gnome-terminal 3.52 / alacritty 0.14"
+    validations:
+      required: true
+
+  - type: input
+    id: python
+    attributes:
+      label: Python version
+      placeholder: "3.13.1"
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: c4rlib version
+      description: "`python -c \"import c4rlib; print(c4rlib.__version__)\"`"
+      placeholder: "3.0.3"
+    validations:
+      required: true
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: Screenshot, recording or traceback
+      description: Anything visual helps a lot. Paste tracebacks in full.
+    validations:
+      required: false

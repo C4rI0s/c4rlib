@@ -1,0 +1,65 @@
+[build-system]
+requires      = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name            = "c4rlib"
+version         = "3.0.3"
+description     = "Showtime CLI toolkit for Python — colors, gradients, logger, spinners, progress bars, tables, ASCII art (FIGlet, image→ASCII, animated sprites), terminal animations (matrix rain, fireworks, glitch…), cross-platform audio, interactive menus/forms/dashboards, HTTP, crypto, files, Discord utils and FX showcases."
+readme          = "README.md"
+license         = "MIT"
+license-files   = ["LICENSE"]
+authors         = [{ name = "c4r" }]
+requires-python = ">=3.9"
+keywords        = [
+    "terminal", "console", "colors", "gradients", "logger", "spinner",
+    "progress", "table", "cli", "ansi", "utils", "http", "crypto",
+    "files", "discord", "ascii", "figlet", "animations", "audio",
+    "sprites", "tui", "menu", "dashboard", "fx", "tools"
+]
+dependencies = [
+    "pyfiglet>=0.8",
+    "pillow>=9.0",
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Operating System :: OS Independent",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: MacOS",
+    "Environment :: Console",
+    "Topic :: Terminals",
+    "Topic :: Multimedia :: Sound/Audio",
+    "Topic :: Multimedia :: Graphics",
+    "Topic :: Utilities",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "build>=1.0",
+    "twine>=5.0",
+]
+
+[project.urls]
+Homepage      = "https://github.com/C4rI0s/c4rlib"
+Repository    = "https://github.com/C4rI0s/c4rlib"
+Issues        = "https://github.com/C4rI0s/c4rlib/issues"
+Changelog     = "https://github.com/C4rI0s/c4rlib/blob/main/CHANGELOG.md"
+Documentation = "https://github.com/C4rI0s/c4rlib#readme"
+
+[tool.setuptools.packages.find]
+where   = ["."]
+include = ["c4rlib*"]
+
+[tool.pytest.ini_options]
+testpaths      = ["tests"]
+addopts        = "-q --strict-markers"
+filterwarnings = ["error::DeprecationWarning:c4rlib.*"]
